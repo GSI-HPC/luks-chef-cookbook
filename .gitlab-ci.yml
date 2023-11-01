@@ -1,0 +1,42 @@
+---
+stages:
+  - lint
+  - chefspec
+  - kitchen
+
+rubocop:
+  stage: lint
+  script:
+    - rake rubocop
+
+foodcritic:
+  stage: lint
+  script:
+    - rake foodcritic
+
+chefspec:
+  stage: chefspec
+  script:
+    - rake chefspec
+  allow_failure: true
+
+kitchen:
+  stage: kitchen
+  resource_group: $CI_JOB_NAME-$CI_PROJECT_NAME
+  script:
+    - kitchen test $SUITE-$PLATFORM --destroy=always
+  after_script:
+    # make sure failed runs are cleaned up too:
+    - kitchen destroy $SUITE-$PLATFORM
+  parallel:
+    matrix:
+      - PLATFORM:
+        # - jessie
+        - stretch
+        - buster
+        SUITE:
+        - $CI_PROJECT_NAME
+
+.post:
+   script:
+    - kitchen destroy
