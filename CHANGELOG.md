@@ -11,3 +11,5 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
       -I gplv3 -V luks
   ```
 * Test suite adapted to internal standards
+* Encrypted loopback device `/dev/mapper/cryptokitchen` created
+  from `/tmp/cryptokitchen.loop`, formatted as `ext4` and mounted as `/mnt`
