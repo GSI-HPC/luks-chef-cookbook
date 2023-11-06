@@ -22,22 +22,26 @@ default_action :add
 property :device, String, name_property: true,
          callbacks: {
            'should be an encrypted device' => lambda {
-             # check whether device is a valid and open cryptsetup device 
+             # check whether device is a valid and open cryptsetup device
            }
          }
 
 property :passphrase, String, sensitive: true,
          # FIXME: comment regex
-         regex: %r{^[1234567890qwertuiopasdfghjklxcvbnm,.!$%QWERTUPASDFHJKLXCVBNM]{12,42}$},
+         regex: %r{^[1234567890qwertuiopasdfghjklxcvbnm
+                     ,.!$%QWERTUPASDFHJKLXCVBNM]{12,42}$
+                }x,
          required: true
 
 load_current_value do |new_resource|
-  # check if passphrase has already been added
-
-  # TODO: what happens if all keyslots are filled but the given passphrase is not set?
+  # 1. check if passphrase has already been added
+  # 2. check if the luks keyslots are accessibe to the Chef key
   current_value_does_not_exist!
+  # TODO: what happens if all keyslots are filled
+  #  but the given passphrase is not set?
+  # 3. Throw error if we cannot open the luks keyslots
 end
-         
+
 action :add do
   converge_if_changed do
     # add passphrase
@@ -47,5 +51,5 @@ end
 action :remove do
   converge_if_changed do
     # remove passphrase
-  end  
+  end
 end
