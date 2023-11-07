@@ -21,3 +21,19 @@
 luks_key '/tmp/cryptokitchen.loop' do
   passphrase 'testpw12numtest'
 end
+
+luks_key '/tmp/cryptokitchen.loop' do
+  passphrase 'testpw12numtest'
+end
+
+2.times do
+  luks_key '/tmp/cryptokitchen.loop' do
+    passphrase 'testpw12numtest'
+    action :remove
+  end
+end
+
+# luks_key '/tmp/cryptokitchen.loop' do
+#   passphrase 'dummbabbler'
+#   action :remove
+# end

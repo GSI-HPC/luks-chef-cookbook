@@ -40,7 +40,37 @@ property :passphrase, String, sensitive: true,
 load_current_value do |new_resource|
   # 1. check if passphrase has already been added
   # 2. check if the luks keyslots are accessibe to the Chef key
-  current_value_does_not_exist!
+
+  # shell command returns exit code 2 on exit & outputs to std::err if the passphrase is not used yet
+  # the function checks if the action is *add*
+  #   yes: the function checks if the shell command returns an error
+  #     yes: the passphrase is not used yet & is added
+  #     no: LUKS(2) knows the passphrase & nothing is done
+  # the function then checks if the actions is *remove*
+  #   yes: the function checks if the shell command returns an error
+  #     yes: the passphrase is not used yet & nothing gets deleted 
+  #     no: the passphrase is used & gets deleted
+
+  if new_resource.action.include? :add 
+    begin
+      shell_out!("cryptsetup luksOpen --test-passphrase #{new_resource.device}",
+                 input: new_resource.passphrase)
+    rescue Mixlib::ShellOut::ShellCommandFailed
+      current_value_does_not_exist!
+    end
+    passphrase new_resource.passphrase
+  elsif new_resource.action.include? :remove
+     begin
+      shell_out!("cryptsetup luksOpen --test-passphrase #{new_resource.device}",
+                 input: new_resource.passphrase)
+    rescue Mixlib::ShellOut::ShellCommandFailed
+      passphrase new_resource.passphrase
+      return
+    end
+    current_value_does_not_exist!
+  else
+    current_value_does_not_exist!
+  end
   # TODO: what happens if all keyslots are filled
   #  but the given passphrase is not set?
   # 3. Throw error if we cannot open the luks keyslots
@@ -48,13 +78,14 @@ end
 
 action :add do
   converge_if_changed do
-    # add passphrase
-    shell_out!("cryptsetup luksAddKey /tmp/cryptokitchen.loop", input: "dummbabbler\n#{new_resource.passphrase}\n")
+    shell_out!("cryptsetup luksAddKey #{new_resource.device}",
+               input: "dummbabbler\n#{new_resource.passphrase}\n")
   end
 end
 
 action :remove do
   converge_if_changed do
-    shell_out!("cryptsetup luksRemoveKey /tmp/cryptokitchen.loop", input: new_resource.passphrase)
+    shell_out!("cryptsetup luksRemoveKey #{new_resource.device}",
+               input: new_resource.passphrase)
   end
 end
