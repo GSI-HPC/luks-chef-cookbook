@@ -48,7 +48,7 @@ end
 
 action :add do
   converge_if_changed do
-    # add passphrase    
+    # add passphrase
     shell_out!("cryptsetup luksAddKey /tmp/cryptokitchen.loop", input: "dummbabbler\n#{new_resource.passphrase}\n")
   end
 end

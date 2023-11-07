@@ -1,3 +1,4 @@
+# coding: utf-8
 #
 # Cookbook:: luks
 # Recipe:: default
@@ -16,3 +17,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+luks_key '/tmp/cryptokitchen.loop' do
+  passphrase 'testpw12numtest'
+end
