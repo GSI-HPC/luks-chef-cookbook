@@ -17,15 +17,19 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+# resource_name :luks_key # see: <https://docs.chef.io/custom_resources_notes/>
+provides :luks_key
+
 default_action :add
 
-property :device, String, name_property: true,
+property :device, String, name_property: true
+=begin
          callbacks: {
            'should be an encrypted device' => lambda {
              # check whether device is a valid and open cryptsetup device
            }
          }
-
+=end
 property :passphrase, String, sensitive: true,
          # FIXME: comment regex
          regex: %r{^[1234567890qwertuiopasdfghjklxcvbnm
@@ -44,12 +48,13 @@ end
 
 action :add do
   converge_if_changed do
-    # add passphrase
+    # add passphrase    
+    shell_out!("cryptsetup luksAddKey /tmp/cryptokitchen.loop", input: "dummbabbler\n#{new_resource.passphrase}\n")
   end
 end
 
 action :remove do
   converge_if_changed do
-    # remove passphrase
+    shell_out!("cryptsetup luksRemoveKey /tmp/cryptokitchen.loop", input: new_resource.passphrase)
   end
 end
