@@ -17,20 +17,20 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# resource_name :luks_key # see: <https://docs.chef.io/custom_resources_notes/>
 provides :luks_key
 
 default_action :add
 
 property :device, String, name_property: true
-=begin
-         callbacks: {
-           'should be an encrypted device' => lambda {
-             # check whether device is a valid and open cryptsetup device
-           }
-         }
-=end
-property :passphrase, String, sensitive: true,
+         # Callbacks: {
+         #   'should be an encrypted device' => lambda {
+         #     # check whether device is a valid and open cryptsetup device
+         #   }
+         # }
+
+property :passphrase,
+         String,
+         sensitive: true,
          # FIXME: comment regex
          regex: %r{^[1234567890qwertuiopasdfghjklxcvbnm
                      ,.!$%QWERTUPASDFHJKLXCVBNM]{12,42}$
@@ -38,8 +38,7 @@ property :passphrase, String, sensitive: true,
          required: true
 
 load_current_value do |new_resource|
-  # 1. check if passphrase has already been added
-  # 2. check if the luks keyslots are accessibe to the Chef key
+   # check if the luks keyslots are accessibe to the Chef key 
 
   # shell command returns exit code 2 on exit & outputs to std::err if the passphrase is not used yet
   # the function checks if the action is *add*
@@ -51,28 +50,36 @@ load_current_value do |new_resource|
   #     yes: the passphrase is not used yet & nothing gets deleted 
   #     no: the passphrase is used & gets deleted
 
-  if new_resource.action.include? :add 
-    begin
-      shell_out!("cryptsetup luksOpen --test-passphrase #{new_resource.device}",
-                 input: new_resource.passphrase)
-    rescue Mixlib::ShellOut::ShellCommandFailed
-      current_value_does_not_exist!
+  if new_resource.action.include? :add
+    # check if passphrase has already been added
+    cmd = Mixlib::ShellOut.new("cryptsetup luksOpen --test-passphrase #{new_resource.device}",
+                               input: new_resource.passphrase)
+    cmd.valid_exit_codes = [0,2]
+    cmd.run_command
+    case cmd.exitstatus
+    when 0
+      passphrase new_resource.passphrase # yes -> do nothing
+    when 2
+      current_value_does_not_exist! # no -> add
     end
-    passphrase new_resource.passphrase
   elsif new_resource.action.include? :remove
-     begin
-      shell_out!("cryptsetup luksOpen --test-passphrase #{new_resource.device}",
-                 input: new_resource.passphrase)
-    rescue Mixlib::ShellOut::ShellCommandFailed
-      passphrase new_resource.passphrase
-      return
+    # check if passphrase exists
+     cmd = Mixlib::ShellOut.new("cryptsetup luksOpen --test-passphrase #{new_resource.device}",
+                               input: new_resource.passphrase)
+    cmd.valid_exit_codes = [0,2]
+    cmd.run_command
+    case cmd.exitstatus
+    when 2
+      passphrase new_resource.passphrase # no -> do nothing
+    when 0
+      current_value_does_not_exist! # yes -> remove
     end
-    current_value_does_not_exist!
   else
     current_value_does_not_exist!
   end
   # TODO: what happens if all keyslots are filled
-  #  but the given passphrase is not set?
+  # but the given passphrase is not set?
+  #   -Answer: "cryptsetup luksAddKey #{new_resource.device}" (shell command in :add) -> exit 1, std::err: All keyslots are full.
   # 3. Throw error if we cannot open the luks keyslots
 end
 
