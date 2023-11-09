@@ -31,11 +31,14 @@ property :device, String, name_property: true
 property :passphrase,
          String,
          sensitive: true,
-         # FIXME: comment regex
-         regex: %r{^[1234567890qwertuiopasdfghjklxcvbnm
-                     ,.!$%QWERTUPASDFHJKLXCVBNM]{12,42}$
-                }x,
+         regex: node['luks']['passphrase_acceptance_regex'],
          required: true
+
+property :master_passphrase, String, sensitive: true, required: false,
+         default: ChefVault::Item.load(
+           node['luks']['master_passphrase']['vault'],
+           node['luks']['master_passphrase']['vault_item']
+         )
 
 load_current_value do |new_resource|
    # check if the luks keyslots are accessibe to the Chef key 
@@ -86,7 +89,7 @@ end
 action :add do
   converge_if_changed do
     shell_out!("cryptsetup luksAddKey #{new_resource.device}",
-               input: "dummbabbler\n#{new_resource.passphrase}\n")
+               input: "#{new_resource.master_passphrase\n#{new_resource.passphrase}\n")
   end
 end
 
