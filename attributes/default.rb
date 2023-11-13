@@ -6,4 +6,4 @@ default['luks']['master_passphrase']['vault_item'] = 'luks_master_passphrase'
 default['luks']['passphrase_acceptance_regex'] =
   %r{^[1234567890qwertuiopasdfghjklxcvbnm
        ,.!$%QWERTUPASDFHJKLXCVBNM]{12,42}$
-  }x,
+  }x

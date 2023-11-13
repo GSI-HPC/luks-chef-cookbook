@@ -89,7 +89,7 @@ end
 action :add do
   converge_if_changed do
     shell_out!("cryptsetup luksAddKey #{new_resource.device}",
-               input: "#{new_resource.master_passphrase\n#{new_resource.passphrase}\n")
+               input: "#{new_resource.master_passphrase}\n#{new_resource.passphrase}\n")
   end
 end
 
