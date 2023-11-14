@@ -35,10 +35,13 @@ property :passphrase,
          required: true
 
 property :master_passphrase, String, sensitive: true, required: false,
-         default: ChefVault::Item.load(
+         default: chef_vault_item(
            node['luks']['master_passphrase']['vault'],
            node['luks']['master_passphrase']['vault_item']
-         )
+           # ChefVault::Item.load(
+           # node['luks']['master_passphrase']['vault'],
+           # node['luks']['master_passphrase']['vault_item']
+         )['key']
 
 load_current_value do |new_resource|
    # check if the luks keyslots are accessibe to the Chef key 
