@@ -18,12 +18,10 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-luks_key '/tmp/cryptokitchen.loop' do
-  passphrase 'testpw12numtest'
-end
-
-luks_key '/tmp/cryptokitchen.loop' do
-  passphrase 'testpw12numtest'
+2.times do
+  luks_key '/tmp/cryptokitchen.loop' do
+    passphrase 'testpw12numtest'
+  end
 end
 
 2.times do
@@ -33,7 +31,3 @@ end
   end
 end
 
-# luks_key '/tmp/cryptokitchen.loop' do
-#   passphrase 'dummbabbler'
-#   action :remove
-# end
