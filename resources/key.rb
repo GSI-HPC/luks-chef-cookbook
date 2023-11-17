@@ -34,7 +34,7 @@ property :passphrase,
          regex: node['luks']['passphrase_acceptance_regex'],
          required: true
 
-property :master_passphrase, String, sensitive: true, required: false,
+property :master_passphrase, String, sensitive: true, desired_state: false, required: false,
          default: chef_vault_item(
            node['luks']['master_passphrase']['vault'],
            node['luks']['master_passphrase']['vault_item']
@@ -65,6 +65,7 @@ load_current_value do |new_resource|
     when 2
       current_value_does_not_exist! # no -> add
     end
+    
   elsif new_resource.action.include? :remove
     # check if passphrase exists
      cmd = Mixlib::ShellOut.new("cryptsetup luksOpen --test-passphrase #{new_resource.device}",
