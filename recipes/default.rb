@@ -21,3 +21,5 @@
 # Authors:
 #   S.Hasert@gsi.de
 #   C.Huhn@gsi.de
+
+package 'cryptsetup'
