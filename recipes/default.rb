@@ -17,17 +17,8 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-2.times do
-  luks_key '/tmp/cryptokitchen.loop' do
-    passphrase 'testpw12numtest'
-  end
+#
+# Authors:
+#   S.Hasert@gsi.de
+#   C.Huhn@gsi.de
 end
-
-2.times do
-  luks_key '/tmp/cryptokitchen.loop' do
-    passphrase 'testpw12numtest'
-    action :remove
-  end
-end
-
