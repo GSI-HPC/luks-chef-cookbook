@@ -1,4 +1,4 @@
 {
   "id": "luks_master_passphrase",
-  "key": "dummbabbler"
+  "passphrase": "dummbabbler"
 }

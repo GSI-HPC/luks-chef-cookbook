@@ -16,15 +16,18 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+# Authors:
+#   S.Hasert@gsi.de
+#   C.Huhn@gsi.de
 
 provides :luks_key
 
 default_action :add
 
 property :device, String, name_property: true
-         # Callbacks: {
+         # callbacks: {
          #   'should be an encrypted device' => lambda {
-         #     # check whether device is a valid and open cryptsetup device
          #   }
          # }
 
@@ -38,7 +41,7 @@ property :master_passphrase, String, sensitive: true, desired_state: false, requ
          default: chef_vault_item(
            node['luks']['master_passphrase']['vault'],
            node['luks']['master_passphrase']['vault_item']
-         )['key']
+         )['passphrase']
 
 load_current_value do |new_resource|
    # check if the luks keyslots are accessibe to the Chef key 
@@ -65,7 +68,7 @@ load_current_value do |new_resource|
     when 2
       current_value_does_not_exist! # no -> add
     end
-    
+
   elsif new_resource.action.include? :remove
     # check if passphrase exists
      cmd = Mixlib::ShellOut.new("cryptsetup luksOpen --test-passphrase #{new_resource.device}",
@@ -84,7 +87,6 @@ load_current_value do |new_resource|
   # TODO: what happens if all keyslots are filled
   # but the given passphrase is not set?
   #   -Answer: "cryptsetup luksAddKey #{new_resource.device}" (shell command in :add) -> exit 1, std::err: All keyslots are full.
-  # 3. Throw error if we cannot open the luks keyslots
 end
 
 action :add do
