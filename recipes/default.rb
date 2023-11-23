@@ -1,3 +1,4 @@
+# coding: utf-8
 #
 # Cookbook:: luks
 # Recipe:: default
@@ -16,3 +17,9 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+# Authors:
+#   S.Hasert@gsi.de
+#   C.Huhn@gsi.de
+
+package 'cryptsetup'
