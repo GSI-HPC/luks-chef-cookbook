@@ -1,9 +1,19 @@
 # luks
-This project implements the addition and removal of LUKS(2) keys through chef.
+This cookbook provides a Chef custom resource for adding and removing LUKS(2) keyslots.
 
 ## Implementation
-Whenever a  `luks_key` resource is created a luks passphrase is added/removed. This resource has the properties `passphrase` and `master_passphrase`. The `master_passphrase` can be any existing key.
-The setup of the encrypted device does not have to happen at install time. It should conform to the requirements given in `/attributes/default.rb` (keys identical on german and american keyboard, 12-42 characters long). Its function is to authorize the addition of new passphrases. The property `passphrase` is required as it is the key that is to be added/removed. This resource has the option to add or remove a luks passphrase. It also checks wether or not the passphrase has already been added or removed. Should a key already exist or been removed chef will do nothing. This prevents two keyowners from having the same key which LUKS2 allows. Should all keyslots be full LUKS2 will raise an error and exit with the code 1. 
+This resource has the properties `passphrase` and `master_passphrase`.
+The master passphrase is by default read from a chef-vault.
+The location of the vault is defined by the node attributes: `default['luks']['master_passphrase']['vault']['luks_passphrases']` and `default['luks']['master_passphrase']['vault_item']['luks_master_passphrase']` and can be overridden in the resource definition.
+The setup of the encrypted device does not have to happen at install time.
+The passphrase should conform to the requirements given in `/attributes/default.rb` (keys identical on german and american keyboard, 12-42 characters long).
+Its function is to authorize the addition of new passphrases.
+The property `passphrase` is required as it is the key that is to be added/removed.
+This resource has the option to add or remove a luks passphrase.
+It also checks whether or not the passphrase has already been added or removed.
+Should a key already exist or been removed chef will do nothing.
+This prevents two keyowners from having the same key which LUKS2 allows.
+Should all keyslots be full `luks_key` will fail and the Chef run will be aborted (unless `ignore_failure` is enabled).
 
 ## Usage
 Add a luks key/passphrase:

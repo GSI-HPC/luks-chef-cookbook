@@ -44,8 +44,6 @@ property :master_passphrase, String, sensitive: true, desired_state: false, requ
          )['passphrase']
 
 load_current_value do |new_resource|
-   # check if the luks keyslots are accessibe to the Chef key 
-
   # shell command returns exit code 2 on exit & outputs to std::err if the passphrase is not used yet
   # the function checks if the action is *add*
   #   yes: the function checks if the shell command returns an error
