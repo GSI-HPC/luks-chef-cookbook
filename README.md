@@ -5,7 +5,7 @@ This cookbook provides a Chef custom resource for adding and removing LUKS(2) ke
 This resource has the properties `passphrase` and `master_passphrase`.
 The master passphrase is by default read from a chef-vault.
 The location of the vault is defined by the node attributes: `default['luks']['master_passphrase']['vault']['luks_passphrases']` and `default['luks']['master_passphrase']['vault_item']['luks_master_passphrase']` and can be overridden in the resource definition.
-The setup of the encrypted device does not have to happen at install time.
+The setup of the encrypted device is outside of the scope of this cookbook.
 The passphrase should conform to the requirements given in `/attributes/default.rb` (keys identical on german and american keyboard, 12-42 characters long).
 Its function is to authorize the addition of new passphrases.
 The property `passphrase` is required as it is the key that is to be added/removed.
