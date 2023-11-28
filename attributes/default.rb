@@ -1,5 +1,5 @@
-default['luks']['master_passphrase']['vault']      = 'luks_passphrases'
-default['luks']['master_passphrase']['vault_item'] = 'luks_master_passphrase'
+default_unless['luks']['master_passphrase']['vault']      = 'luks_passphrases'
+default_unless['luks']['master_passphrase']['vault_item'] = 'luks_master_passphrase'
 
 # - keys that are identical on American and German keyboards :)
 # - between 12 and 42 characters
