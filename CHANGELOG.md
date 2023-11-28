@@ -2,13 +2,14 @@
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## Unreleased
+## [0.1.1] - 2023-11-28
 
 ### Changed
 
 * Relax `chef_version` requirements
 * Replace `Policyfile.rb` with `Berksfile`
 * Lower attribute precededence of default vault names to `default_unless`
+* Allow I and G in default passphrase regex
 
 ## [0.1.0] - 2023-11-24
 
