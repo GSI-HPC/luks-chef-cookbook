@@ -37,11 +37,14 @@ property :passphrase,
          regex: node['luks']['passphrase_acceptance_regex'],
          required: true
 
-property :master_passphrase, String, sensitive: true, desired_state: false, required: false,
-         default: chef_vault_item(
-           node['luks']['master_passphrase']['vault'],
-           node['luks']['master_passphrase']['vault_item']
-         )['passphrase']
+property :master_passphrase, String,
+         sensitive: true,
+         desired_state: false,
+         required: false,
+         default: lazy { chef_vault_item(
+                           node['luks']['master_passphrase']['vault'],
+                           node['luks']['master_passphrase']['vault_item']
+                         )['passphrase'] }
 
 load_current_value do |new_resource|
   # shell command returns exit code 2 on exit & outputs to std::err if the passphrase is not used yet

@@ -2,6 +2,12 @@
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [0.1.2] - 2023-11-30
+
+* Make the evaluation of the default `master_passphrase` of `luks_key` lazy to
+  avoid compile time errors due to missing vault permissions
+  when the luks cookbook is pulled in as a dependency but not used
+
 ## [0.1.1] - 2023-11-28
 
 ### Changed
